@@ -4,10 +4,7 @@ import './CalcBtn.css'
 
 function CalcBtn({ clickHandler, value, type }) {
   return (
-    <button
-      value={value}
-      onClick={() => clickHandler(value)}
-      className={`calcbtn ${type}`}>
+    <button value={value} onClick={() => clickHandler(value)} className={`calcbtn ${type}`} type="button">
       {value}
     </button>
   )

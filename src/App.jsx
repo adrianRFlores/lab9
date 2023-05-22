@@ -1,3 +1,5 @@
+/* eslint no-restricted-globals: 0 */
+/* tengan piedad porque si uso Number.isNaN literalmente deja de funcionar todo. mejor lo dejo con isNaN y somos felices todos :) */
 import React, { useState } from 'react'
 import CalcBtn from './components/CalcBtn/CalcBtn'
 import './App.css'
@@ -5,9 +7,10 @@ import './App.css'
 function App() {
   const [display, setDisplay] = useState('0')
   const [operator, setOperator] = useState('')
-  let previousVal = 0
+  const [resetDisplay, setResetDisplay] = useState(false)
+  const [previousVal, setPreviousVal] = useState(0)
 
-  let buttons = [
+  const buttons = [
     'C',
     '+/-',
     '%',
@@ -32,13 +35,15 @@ function App() {
   const reset = () => {
     setDisplay('0')
     setOperator('')
+    setPreviousVal(0)
+    setResetDisplay(false)
   }
 
   const toggleSign = () => {
     if (
-      !isNaN(display.charAt(0)) &&
-      (display.charAt(0) !== '0' || display.substring(0, 2) === '0.') &&
-      display.length < 9
+      !isNaN(display.charAt(0))
+      && (display.charAt(0) !== '0' || display.substring(0, 2) === '0.')
+      && display.length < 9
     ) {
       setDisplay('-'.concat(display))
     } else if (display.charAt(0) === '-') {
@@ -46,14 +51,50 @@ function App() {
     }
   }
 
-  const handleOperator = (value) => {
-    if (previousVal !== 0 && operator !== '' && value === '=') {
-      operate(operator)
-      setOperator('')
+  const operate = (sign) => {
+    switch (sign) {
+      case '+':
+        setDisplay((previousVal + parseFloat(display)).toString())
+        setPreviousVal(0)
+        break
+      case '-':
+        setDisplay((previousVal - parseFloat(display)).toString())
+        setPreviousVal(0)
+        break
+      case '*':
+        setDisplay((previousVal * parseFloat(display)).toString().substring(0, 10))
+        setPreviousVal(0)
+        break
+      case '/':
+        if (display === '0') {
+          setDisplay('ERROR')
+        } else {
+          setDisplay((previousVal / parseFloat(display)).toString().substring(0, 10))
+          setPreviousVal(0)
+        }
+        break
+      case '%':
+        if (display === '0') {
+          setDisplay('ERROR')
+        } else {
+          setDisplay((previousVal % parseFloat(display)).toString().substring(0, 10))
+          setPreviousVal(0)
+        }
+        break
+      default:
+        break
     }
   }
 
-  const operate = (sign) => {}
+  const handleOperator = (value) => {
+    if (operator !== '' && value === '=') {
+      operate(operator)
+      setOperator('')
+    } else if (operator === '' && value !== '=') {
+      setOperator(value)
+      setResetDisplay(true)
+    }
+  }
 
   const actionReceiver = (value) => {
     if (value === 'C') {
@@ -62,7 +103,7 @@ function App() {
       toggleSign()
     } else if (isNaN(value) && value !== '.') {
       handleOperator(value)
-    } else {
+    } else if (!resetDisplay) {
       if (display.length < 9 && display !== '0') {
         setDisplay(display.concat(value))
       } else if (display === '0') {
@@ -72,6 +113,10 @@ function App() {
           setDisplay(value)
         }
       }
+    } else if (resetDisplay && (!isNaN(value) || value === '.')) {
+      setPreviousVal(parseFloat(display))
+      setDisplay(value === '.' ? '0.' : value)
+      setResetDisplay(false)
     }
   }
 
@@ -83,12 +128,10 @@ function App() {
           let type
           if (!isNaN(+elem) || elem === '.') {
             type = 'number'
+          } else if (elem === '*' || elem === '+' || elem === '-' || elem === '/' || elem === '=') {
+            type = 'operator'
           } else {
-            if (elem === '*' || elem === '+' || elem === '-' || elem === '/' || elem === '=') {
-              type = 'operator'
-            } else {
-              type = 'util'
-            }
+            type = 'util'
           }
           return (
             <CalcBtn
