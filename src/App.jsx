@@ -1,5 +1,6 @@
 /* eslint no-restricted-globals: 0 */
-/* tengan piedad porque si uso Number.isNaN literalmente deja de funcionar todo. mejor lo dejo con isNaN y somos felices todos :) */
+/* tengan piedad porque si uso Number.isNaN literalmente deja de funcionar todo.
+Mejor lo dejo con isNaN y somos felices todos :) */
 import React, { useState } from 'react'
 import CalcBtn from './components/CalcBtn/CalcBtn'
 import './App.css'
@@ -9,6 +10,7 @@ function App() {
   const [operator, setOperator] = useState('')
   const [resetDisplay, setResetDisplay] = useState(false)
   const [previousVal, setPreviousVal] = useState(0)
+  const max = 999999999
 
   const buttons = [
     'C',
@@ -54,7 +56,7 @@ function App() {
   const operate = (sign) => {
     switch (sign) {
       case '+':
-        if (previousVal + parseFloat(display) < 0 || previousVal + parseFloat(display) > 999999999){
+        if (previousVal + parseFloat(display) < 0 || previousVal + parseFloat(display) > max) {
           setDisplay('ERROR')
         } else {
           setDisplay((previousVal + parseFloat(display)).toString())
@@ -62,7 +64,7 @@ function App() {
         setPreviousVal(0)
         break
       case '-':
-        if (previousVal - parseFloat(display) < 0){
+        if (previousVal - parseFloat(display) < 0) {
           setDisplay('ERROR')
         } else {
           setDisplay((previousVal - parseFloat(display)).toString())
@@ -70,7 +72,7 @@ function App() {
         setPreviousVal(0)
         break
       case '*':
-        if (previousVal * parseFloat(display) < 0 || previousVal * parseFloat(display) > 999999999){
+        if (previousVal * parseFloat(display) < 0 || previousVal * parseFloat(display) > max) {
           setDisplay('ERROR')
         } else {
           setDisplay((previousVal * parseFloat(display)).toString().substring(0, 10))
@@ -78,7 +80,7 @@ function App() {
         setPreviousVal(0)
         break
       case '/':
-        if (display === '0' || previousVal / parseFloat(display) < 0 || previousVal / parseFloat(display) > 999999999) {
+        if (display === '0' || previousVal / parseFloat(display) < 0 || previousVal / parseFloat(display) > max) {
           setDisplay('ERROR')
         } else {
           setDisplay((previousVal / parseFloat(display)).toString().substring(0, 10))
