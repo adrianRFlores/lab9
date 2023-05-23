@@ -54,7 +54,7 @@ function App() {
   const operate = (sign) => {
     switch (sign) {
       case '+':
-        if (previousVal + parseFloat(display) < 0){
+        if (previousVal + parseFloat(display) < 0 || previousVal + parseFloat(display) > 999999999){
           setDisplay('ERROR')
         } else {
           setDisplay((previousVal + parseFloat(display)).toString())
@@ -70,7 +70,7 @@ function App() {
         setPreviousVal(0)
         break
       case '*':
-        if (previousVal * parseFloat(display) < 0){
+        if (previousVal * parseFloat(display) < 0 || previousVal * parseFloat(display) > 999999999){
           setDisplay('ERROR')
         } else {
           setDisplay((previousVal * parseFloat(display)).toString().substring(0, 10))
@@ -78,7 +78,7 @@ function App() {
         setPreviousVal(0)
         break
       case '/':
-        if (display === '0' || previousVal / parseFloat(display) < 0) {
+        if (display === '0' || previousVal / parseFloat(display) < 0 || previousVal / parseFloat(display) > 999999999) {
           setDisplay('ERROR')
         } else {
           setDisplay((previousVal / parseFloat(display)).toString().substring(0, 10))
